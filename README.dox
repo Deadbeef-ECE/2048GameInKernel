@@ -1,0 +1,71 @@
+@@Author: Yuhang Jiang(yuhangj)
+
+@ Overwiew:
+  I only wrote a few *.c files. There are two main reasons:
+  1. This can be more straigtfoward to browse.
+  2. In order to reuse the interrupt part, I put all interrupt handers and
+  install/dispatch functions in the same file. This can help me to distinguish 
+  it from future simliar files, such as trap.c, syscall.c... easily.
+
+@ Files layout:
+  kern/
+  game.c      -- Game implementation
+  interrupt.S -- Interrupt assembly code
+  int.c       -- Interrupt handlers installation and dispatch
+  console.c   -- Console implementation
+
+  kern/inc/
+  int.h       -- Only several redefined name of macros in oder to summarize
+  similar things togther and plan to reuse in the future.
+
+@ Interrupt handler implementation:
+  (1)Load the idt and fill the gate according to int's offest;
+  (2)When an int happends, push important registers and int numbers.
+  (3)Then dispatch relavent hanlders to deal with fired int.
+
+@ 2048 implementation:
+
+  Game UI:
++----------+----------+----------+----------+  +--------------+---------------+
+|          |          |          |          |  |    SCORE     |      BEST     |
+|          |          |          |          |  +--------------+---------------+
+|          |          |          |          |  |              |               |
+|          |          |          |          |  |              |               |
+|          |          |          |          |  |              |               |
++----------+----------+----------+----------+  +--------------+---------------+
+|          |          |          |          |
+|          |          |          |          |   'w a s d' to move
+|          |          |          |          |   'p' to pause
+|          |          |          |          |   'q' to quit
+|          |          |          |          |   'r' to restart
++----------+----------+----------+----------+
+|          |          |          |          |
+|          |          |          |          |
+|          |          |          |          |
+|          |          |          |          |
+|          |          |          |          |
++----------+----------+----------+----------+
+|          |          |          |          |
+|          |          |          |          |
+|          |          |          |          |
+|          |          |          |          |
+|          |          |          |          |
++----------+----------+----------+----------+
+
+  Add one more operation - restart game other than defualt operations.
+
+  The basic idea to finish the move or merge action:
+  first, finish the move up action;
+  second, for other actions, just rotate the board to act like move up, then 
+  rotate back along the clockwise direction.
+  Third, set flag for avoiding the invalid merge action.
+
+  The basic idea to finsh the animation:
+  The writeup says we need to show the slide process. However, it is hard to see 
+  the effect because the frame refresh very quickly. So, I use another way to 
+  show what will happen after movement. That is showing the added number on the 
+  top of merged number. And when taking a new move action, cover old one and
+  show the new changing of the numbers.
+
+
+
